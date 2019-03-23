@@ -1,0 +1,34 @@
+---
+- name: Remove default nginx vhost config file (if configured).
+  file:
+    path: "{{ nginx_default_vhost_path }}"
+    state: absent
+  when: nginx_remove_default_vhost
+  notify: restart nginx
+
+- name: Ensure nginx_vhost_path exists.
+  file:
+    path: "{{ nginx_vhost_path }}"
+    state: directory
+  notify: reload nginx
+
+- name: clean all vhosts
+  file: dest={{ item }}
+  with_fileglob: "{{ nginx_templates_source }}/*.conf"
+  when: nginx_templates_copy and nginx_templates_clean
+
+- name: Populate vhost from templates
+  template:
+    src: "{{ item }}"
+    dest: "{{ nginx_vhost_path }}/{{ item | basename | regex_replace('\\.j2','') }}"
+  with_fileglob: "{{ nginx_templates_source }}/*.j2"
+  when: nginx_templates_copy
+  notify:
+    - validate nginx configuration
+    - reload nginx
+
+- name: Remove legacy vhosts.conf file.
+  file:
+    path: "{{ nginx_vhost_path }}/vhosts.conf"
+    state: absent
+  notify: reload nginx

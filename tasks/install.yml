@@ -1,0 +1,41 @@
+---
+# Targeting specific OSes or distributions:
+#
+#   - `ansible_system`               → Linux, BSD, ...
+#   - `ansible_os_family`            → Debian, RedHat, ...
+#   - `ansible_distribution`         → Debian, Ubuntu, RedHat, ...
+#   - `ansible_distribution_release` → precise, wheezy, ...
+#   - `ansible_pkg_mgr`              → apt, yum, ...
+#   - `ansible_architecture`         → x86_64, x86_32, ...
+- name: Adding APT repository key
+  apt_key:
+    url: "http://nginx.org/keys/nginx_signing.key"
+  when: nginx_ppa_use
+
+- name: Add official APT repository
+  apt_repository:
+    repo: "deb http://nginx.org/packages/{{ nginx_ppa_version }}/{{ansible_distribution|lower}}/ {{ansible_distribution_release}} nginx"
+    state: present
+    update_cache: yes
+  register: nginx_ppa_added
+  when: nginx_ppa_use
+
+- name: Ensure nginx will be reinstalled if the PPA was just added.
+  apt:
+    name: nginx
+    state: absent
+  when: nginx_ppa_added.changed
+
+- name: Ensure nginx is installed.
+  apt:
+    name: "{{ nginx_package_name }}={{ nginx_package_version|default('*') }}"
+    state: present
+    update_cache: yes
+
+- name: Ensure nginx modules is installed.
+  apt:
+    name: "{{ item.name }}={{ item.version|default('*') }}"
+    state: present
+    update_cache: yes
+  with_items: "{{ nginx_modules_packages }}"
+  when: nginx_modules_packages

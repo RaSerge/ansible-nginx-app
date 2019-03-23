@@ -1,0 +1,44 @@
+---
+# Use the official Nginx PPA for Ubuntu, and the version to use if so.
+nginx_ppa_use: false
+nginx_ppa_version: mainline
+# The name of the nginx apt package to install.
+nginx_package_version: ''
+#Name and version or dynamic modules for nginx
+nginx_modules_packages: []
+  # - name: "nginx-module-geoip"
+  #   version: "*"
+
+nginx_configs_source: ''
+
+nginx_remove_default_nginx_conf: true
+
+nginx_modules: []
+nginx_extra_conf_options: ""
+# Example extra main options, used within the main nginx's context:
+#   nginx_extra_conf_options: |
+#     env VARIABLE;
+#     include /etc/nginx/main.d/*.conf;
+nginx_extra_http_options: ""
+# Example extra http options, printed inside the main server http config:
+#    nginx_extra_http_options: |
+#      proxy_buffering    off;
+#      proxy_set_header   X-Real-IP $remote_addr;
+#      proxy_set_header   X-Scheme $scheme;
+#      proxy_set_header   X-Forwarded-For $proxy_add_x_forwarded_for;
+#      proxy_set_header   Host $http_host;
+
+nginx_remove_default_vhost: false
+nginx_templates_copy: false
+nginx_templates_clean: false
+nginx_vhosts_source: ''
+
+nginx_ssl_certs_copy: false
+nginx_ssl_certs_path: ""
+#nginx_ssl_certs_path: balancer/ssl/
+
+nginx_htpasswd_files_copy: 'false'
+nginx_htpasswd_files_path: ''
+
+nginx_create_dhparam: false
+nginx_dhparam_autoupdate: false

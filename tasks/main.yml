@@ -1,0 +1,29 @@
+---
+- include_tasks: init.yml
+  tags:
+    - nginx_user_init
+    - nginx_conf
+
+- include_tasks: install.yml
+  tags:
+    - nginx_install
+
+- include_tasks: config.yml
+  tags:
+    - nginx_conf
+
+- include_tasks: ssl.yml
+  tags:
+    - nginx_ssl
+
+- include_tasks: vhosts.yml
+  tags:
+    - nginx_vhosts
+    - vhosts
+
+- include_tasks: htpasswd.yml
+  tags:
+    - nginx_htpasswd
+
+- name: Ensure nginx is started and enabled to start at boot.
+  service: name=nginx state=started enabled=yes

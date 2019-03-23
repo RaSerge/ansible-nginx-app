@@ -1,0 +1,38 @@
+---
+- hosts: vagrant
+  become: yes
+  vars:
+    geoip_db_path: "/usr/share/GeoIP"
+    geoip_db: "{{ geoip_db_path }}/GeoIP.dat"
+    geoip_autoupdater: true
+    geoip_autoupdater_cron: true
+    nginx_ppa_use: true
+    nginx_ppa_version: mainline
+    nginx_package_name: "nginx"
+    nginx_package_version: "1.11.*"
+    nginx_modules_packages:
+      - name: "nginx-module-geoip"
+        version: "1.11.*"
+    nginx_templates_copy: true
+    nginx_templates_source: "{{playbook_dir}}/templates/balancer/confd/"
+    nginx_ssl_certs_copy: true
+    nginx_ssl_certs_path: "{{playbook_dir}}/files/balancer/ssl/"
+    nginx_create_dhparam: true
+    nginx_dhparam_autoupdate: true
+    nginx_remove_default_vhost: true
+    nginx_remove_default_nginx_conf: true
+    nginx_htpasswd_files_copy: true
+    nginx_htpasswd_files_path: "{{playbook_dir}}/files/balancer/httpasswd/"
+    nginx_modules:
+      - modules/ngx_http_geoip_module.so
+    nginx_configs_source: "{{playbook_dir}}/templates/balancer/"
+    nginx_extra_http_options: |
+      fastcgi_buffering on;
+      fastcgi_buffers 4 256k;
+      fastcgi_busy_buffers_size 256k;
+      fastcgi_temp_file_write_size 512k;
+      geoip_country /usr/share/GeoIP/GeoIP.dat;
+
+  roles:
+    - { role: geoip }
+    - { role: nginx }
